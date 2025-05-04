@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Simple Catalog</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 1em auto;
+      padding: 0 1em;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 0.5em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 0.5em;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5em;
+      text-align: left;
+    }
+    th {
+      background: #f4f4f4;
+    }
+    tr:nth-child(even) {
+      background: #fafafa;
+    }
+    img {
+      display: block;
+      max-width: 100px;
+      margin: auto;
+    }
+    .pager {
+      text-align: center;
+      margin-bottom: 1em;
+    }
+    .pager button {
+      background: #007BFF;
+      color: white;
+      border: none;
+      padding: 0.5em 1em;
+      margin: 0 0.25em;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .pager button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+    .pager span {
+      vertical-align: middle;
+      margin: 0 0.5em;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Product Catalog</h1>
+
+  <table id="tbl">
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="pager">
+    <button onclick="prev()">Prev</button>
+    <span id="info"></span>
+    <button onclick="next()">Next</button>
+  </div>
+
+  <script>
+    const data = [
+      { img: 'https://upload.wikimedia.org/wikipedia/en/8/81/ShawshankRedemptionMoviePoster.jpg', name: 'Headphones', price: '₹7,999' },
+      { img: 'https://via.placeholder.com/50', name: 'Smartwatch',  price: '₹12,999' },
+      { img: 'https://via.placeholder.com/50', name: 'Mouse',      price: '₹2,499' },
+      { img: 'https://via.placeholder.com/50', name: 'Stand',      price: '₹1,999' }
+    ];
+    let page = 1, perPage = 2;
+    const total = Math.ceil(data.length / perPage);
+
+    function show() {
+      const start = (page - 1) * perPage;
+      const slice = data.slice(start, start + perPage);
+      document.querySelector('#tbl tbody').innerHTML = slice.map(d =>
+        `<tr>
+           <td><img src="${d.img}" alt=""></td>
+           <td>${d.name}</td>
+           <td>${d.price}</td>
+         </tr>`).join('');
+      document.getElementById('info').textContent = `Page ${page} of ${total}`;
+      document.querySelectorAll('.pager button')[0].disabled = page === 1;
+      document.querySelectorAll('.pager button')[1].disabled = page === total;
+    }
+
+    function prev() { if (page > 1) { page--; show(); } }
+    function next() { if (page < total) { page++; show(); } }
+
+    show();
+  </script>
+
+</body>
+</html>

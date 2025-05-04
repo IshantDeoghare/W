@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Condition</title>
+    <style>
+        *{
+            margin : 0;
+            padding : 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            display: flex;
+            flex-direction: column;
+            color: #333; 
+            padding: 2rem;
+            margin: 0;
+        }
+        .container{
+            max-width: 500px;
+            padding : 1rem 2rem;
+            border : auto;
+            border-radius: 8px;
+            margin : auto;
+            background-color: aliceblue;
+        }
+        input,button{
+            width : 100%;
+            padding: 0.5rem;
+            margin : 0.5rem 0 ;
+        }
+        h2{
+            text-align: center;
+        }
+        .result { margin-top: 1rem; padding: 1rem; background: #def; border-radius: 4px; }
+
+    </style>
+</head>
+<body>
+    <div class = "container">
+        <h2>Weather Information</h2>
+        <input type ="text" id = "textInput" placeholder = "Please Enter the city name "/>
+        <button id = "btn">Submit</button>
+    </div>
+    <div id = "output">
+
+    </div>
+    <script>
+       async function fetchDatas(){
+        try{
+            const file = await fetch("./weather.json");
+            return await file.json()
+        }
+        catch(e){
+            console.log(e);
+            return {}
+        }
+
+        
+       }
+       document.getElementById("btn").addEventListener('click',async () =>{
+            const city = document.getElementById('textInput').value.trim();
+            const output = document.getElementById('output');
+
+            output.innerHTML = '';
+            
+            const repo = await fetchDatas();
+            const data = repo[city];
+
+            if(!data){
+                output.innerHTML = `<p>Please enter the valid city</p>`;
+            }
+            
+            output.innerHTML = `
+             <div class="result">
+          <h2>Weather in ${data.city}</h2>
+          <p><strong>Temperature:</strong> ${data.temperature}°C</p>
+          <p><strong>Humidity:</strong> ${data.humidity}%</p>
+          <p><strong>Condition:</strong> ${data.condition}</p>
+        </div>
+      `;
+            
+
+        })
+    </script>
+</body>
+</html>

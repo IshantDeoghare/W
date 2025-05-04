@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User List</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+    .loading {
+      text-align: center;
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>User List</h1>
+  
+  <div id="users-container">
+    <p class="loading">Loading users...</p>
+  </div>
+
+  <script>
+    // Function to fetch users and display them
+    async function fetchUsers() {
+      try {
+        // Fetch data from our API
+        const response = await fetch('/api/users');
+        const data = await response.json();
+        
+        // Create a table to display users
+        let html = `
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+        
+        // Add each user to the table
+        data.users.forEach(user => {
+          html += `
+            <tr>
+              <td>${user.id}</td>
+              <td>${user.name}</td>
+              <td>${user.email}</td>
+              <td>${user.role}</td>
+            </tr>
+          `;
+        });
+        
+        html += `
+            </tbody>
+          </table>
+        `;
+        
+        // Update the DOM
+        document.getElementById('users-container').innerHTML = html;
+        
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        document.getElementById('users-container').innerHTML = 
+          '<p>Error loading users. Please try again later.</p>';
+      }
+    }
+    
+    // Load users when page loads
+    window.addEventListener('load', fetchUsers);
+  </script>
+</body>
+</html>

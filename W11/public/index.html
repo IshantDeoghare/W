@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login & Registration</title>
+  <style>
+    body { max-width: 400px; margin: auto; font-family: Arial; }
+    form { display: none; }
+    form.active { display: block; }
+    input { width: 100%; padding: 8px; margin: 6px 0; }
+    .error { color: red; font-size: 0.9em; }
+    button { padding: 10px; width: 100%; }
+    nav { text-align: center; margin: 20px 0; }
+    nav button { margin: 0 5px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <button id="showLogin">Login</button>
+    <button id="showReg">Register</button>
+  </nav>
+
+  <form id="loginForm" class="active">
+    <h2>Login</h2>
+    <input name="username" placeholder="Username" required />
+    <input name="password" type="password" placeholder="Password" required />
+    <div class="error" id="loginErr"></div>
+    <button type="submit">Login</button>
+  </form>
+
+  <form id="regForm">
+    <h2>Register</h2>
+    <input name="name" placeholder="Name" required />
+    <input name="email" type="email" placeholder="Email" required />
+    <input name="mobile" type="tel" placeholder="Mobile" pattern="\d{10}" required />
+    <input name="dob" type="date" required />
+    <input name="city" placeholder="City" required />
+    <input name="address" placeholder="Address" required />
+    <input name="username" placeholder="Username" required />
+    <input name="password" type="password" placeholder="Password" minlength="6" required />
+    <div class="error" id="regErr"></div>
+    <button type="submit">Register</button>
+  </form>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const regForm   = document.getElementById('regForm');
+    document.getElementById('showLogin').onclick = () => {
+      loginForm.classList.add('active'); regForm.classList.remove('active');
+    };
+    document.getElementById('showReg').onclick = () => {
+      regForm.classList.add('active'); loginForm.classList.remove('active');
+    };
+
+    // Registration
+    regForm.onsubmit = async e => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(regForm));
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify(data)
+        });
+        const j = await res.json();
+        if (!res.ok) throw new Error(j.error);
+        alert(j.message);
+        window.location.href = 'users.html';
+      } catch(err) {
+        document.getElementById('regErr').textContent = err.message;
+      }
+    };
+
+    // Login
+    loginForm.onsubmit = async e => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(loginForm));
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify(data)
+        });
+        const j = await res.json();
+        if (!res.ok) throw new Error(j.error);
+        alert(j.message);
+        window.location.href = 'users.html';
+      } catch(err) {
+        document.getElementById('loginErr').textContent = err.message;
+      }
+    };
+  </script>

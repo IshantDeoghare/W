@@ -1,0 +1,335 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Database</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    input, select {
+      padding: 8px;
+      margin: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .section {
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Music Database Management</h1>
+
+  <div class="section">
+    <h2>Initialize Database</h2>
+    <p>First, insert sample songs to get started:</p>
+    <button onclick="insertSongs()">Insert 5 Sample Songs</button>
+    <div id="initResult"></div>
+  </div>
+
+  <div class="section">
+    <h2>All Songs</h2>
+    <button onclick="listAllSongs()">Show All Songs</button>
+    <p>Total count: <span id="songCount">0</span></p>
+    <table id="allSongsTable">
+      <thead>
+        <tr>
+          <th>Song Name</th>
+          <th>Film</th>
+          <th>Music Director</th>
+          <th>Singer</th>
+          <th>Actor</th>
+          <th>Actress</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="allSongsList"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Add Your Favorite Song</h2>
+    <input id="newSongName" placeholder="Song Name">
+    <input id="newFilm" placeholder="Film">
+    <input id="newDirector" placeholder="Music Director">
+    <input id="newSinger" placeholder="Singer">
+    <input id="newActor" placeholder="Actor (optional)">
+    <input id="newActress" placeholder="Actress (optional)">
+    <button onclick="addFavoriteSong()">Add Song</button>
+    <div id="addResult"></div>
+  </div>
+
+  <div class="section">
+    <h2>Search Songs</h2>
+    
+    <div>
+      <h3>By Music Director</h3>
+      <input id="directorName" placeholder="Director Name">
+      <button onclick="findByDirector()">Search</button>
+    </div>
+    
+    <div>
+      <h3>By Director and Singer</h3>
+      <input id="searchDirector" placeholder="Director Name">
+      <input id="searchSinger" placeholder="Singer Name">
+      <button onclick="findByDirectorAndSinger()">Search</button>
+    </div>
+    
+    <div>
+      <h3>By Film and Singer</h3>
+      <input id="searchFilm" placeholder="Film Name">
+      <input id="searchFilmSinger" placeholder="Singer Name">
+      <button onclick="findByFilmAndSinger()">Search</button>
+    </div>
+    
+    <h3>Search Results</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Song Name</th>
+          <th>Film</th>
+          <th>Music Director</th>
+          <th>Singer</th>
+          <th>Actor</th>
+          <th>Actress</th>
+        </tr>
+      </thead>
+      <tbody id="searchResults"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Update Song</h2>
+    <p>Select a song from the list and add Actor/Actress information:</p>
+    <select id="songSelect">
+      <option value="">-- Select a song --</option>
+    </select>
+    <input id="updateActor" placeholder="Actor Name">
+    <input id="updateActress" placeholder="Actress Name">
+    <button onclick="updateSong()">Update Song</button>
+    <div id="updateResult"></div>
+  </div>
+
+  <script>
+    // Insert sample songs
+    function insertSongs() {
+      fetch('/insert-songs')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('initResult').textContent = data;
+          listAllSongs();
+        })
+        .catch(err => {
+          document.getElementById('initResult').textContent = 'Error: ' + err.message;
+        });
+    }
+
+    // List all songs
+    function listAllSongs() {
+      fetch('/songs')
+        .then(response => response.json())
+        .then(data => {
+          const tbody = document.getElementById('allSongsList');
+          const select = document.getElementById('songSelect');
+          
+          // Clear previous options but keep the placeholder
+          while (select.options.length > 1) {
+            select.remove(1);
+          }
+          
+          // Clear table
+          tbody.innerHTML = '';
+          
+          // Update count
+          document.getElementById('songCount').textContent = data.count;
+          
+          // Populate table and dropdown
+          data.songs.forEach(song => {
+            // Add to table
+            const row = tbody.insertRow();
+            row.insertCell(0).textContent = song.Songname;
+            row.insertCell(1).textContent = song.Film;
+            row.insertCell(2).textContent = song.Music_director;
+            row.insertCell(3).textContent = song.singer;
+            row.insertCell(4).textContent = song.Actor || '';
+            row.insertCell(5).textContent = song.Actress || '';
+            
+            const actionsCell = row.insertCell(6);
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.onclick = () => deleteSong(song._id);
+            actionsCell.appendChild(deleteBtn);
+            
+            // Add to dropdown
+            const option = document.createElement('option');
+            option.value = song._id;
+            option.textContent = song.Songname;
+            select.appendChild(option);
+          });
+        })
+        .catch(err => console.error('Error fetching songs:', err));
+    }
+
+    // Delete song
+    function deleteSong(id) {
+      if (confirm('Are you sure you want to delete this song?')) {
+        fetch(`/songs/${id}`, { method: 'DELETE' })
+          .then(response => response.text())
+          .then(data => {
+            alert(data);
+            listAllSongs();
+          })
+          .catch(err => console.error('Error deleting song:', err));
+      }
+    }
+
+    // Add favorite song
+    function addFavoriteSong() {
+      const song = {
+        Songname: document.getElementById('newSongName').value,
+        Film: document.getElementById('newFilm').value,
+        Music_director: document.getElementById('newDirector').value,
+        singer: document.getElementById('newSinger').value,
+        Actor: document.getElementById('newActor').value,
+        Actress: document.getElementById('newActress').value
+      };
+      
+      fetch('/songs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(song)
+      })
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('addResult').textContent = data;
+          // Clear form
+          document.getElementById('newSongName').value = '';
+          document.getElementById('newFilm').value = '';
+          document.getElementById('newDirector').value = '';
+          document.getElementById('newSinger').value = '';
+          document.getElementById('newActor').value = '';
+          document.getElementById('newActress').value = '';
+          listAllSongs();
+        })
+        .catch(err => {
+          document.getElementById('addResult').textContent = 'Error: ' + err.message;
+        });
+    }
+
+    // Find by director
+    function findByDirector() {
+      const director = document.getElementById('directorName').value;
+      fetch(`/songs/director/${director}`)
+        .then(response => response.json())
+        .then(displaySearchResults)
+        .catch(err => console.error('Error searching songs:', err));
+    }
+
+    // Find by director and singer
+    function findByDirectorAndSinger() {
+      const director = document.getElementById('searchDirector').value;
+      const singer = document.getElementById('searchSinger').value;
+      fetch(`/songs/director/${director}/singer/${singer}`)
+        .then(response => response.json())
+        .then(displaySearchResults)
+        .catch(err => console.error('Error searching songs:', err));
+    }
+
+    // Find by film and singer
+    function findByFilmAndSinger() {
+      const film = document.getElementById('searchFilm').value;
+      const singer = document.getElementById('searchFilmSinger').value;
+      fetch(`/songs/film/${film}/singer/${singer}`)
+        .then(response => response.json())
+        .then(displaySearchResults)
+        .catch(err => console.error('Error searching songs:', err));
+    }
+
+    // Display search results
+    function displaySearchResults(songs) {
+      const tbody = document.getElementById('searchResults');
+      tbody.innerHTML = '';
+      
+      songs.forEach(song => {
+        const row = tbody.insertRow();
+        row.insertCell(0).textContent = song.Songname;
+        row.insertCell(1).textContent = song.Film;
+        row.insertCell(2).textContent = song.Music_director;
+        row.insertCell(3).textContent = song.singer;
+        row.insertCell(4).textContent = song.Actor || '';
+        row.insertCell(5).textContent = song.Actress || '';
+      });
+    }
+
+    // Update song with actor and actress
+    function updateSong() {
+      const songId = document.getElementById('songSelect').value;
+      if (!songId) {
+        alert('Please select a song to update');
+        return;
+      }
+      
+      const updateData = {
+        Actor: document.getElementById('updateActor').value,
+        Actress: document.getElementById('updateActress').value
+      };
+      
+      fetch(`/songs/${songId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateData)
+      })
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('updateResult').textContent = 'Song updated successfully';
+          document.getElementById('updateActor').value = '';
+          document.getElementById('updateActress').value = '';
+          listAllSongs();
+        })
+        .catch(err => {
+          document.getElementById('updateResult').textContent = 'Error: ' + err.message;
+        });
+    }
+
+    // Initial load
+    window.onload = function() {
+      listAllSongs();
+    };
+  </script>
+</body>
+</html>

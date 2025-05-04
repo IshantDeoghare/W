@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AJAX To-Do List</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
+    ul { list-style: none; padding: 0; }
+    li { display: flex; align-items: center; margin: .5rem 0; }
+    li input[type="text"] { flex: 1; margin-right: .5rem; }
+    button { margin-left: .25rem; }
+  </style>
+</head>
+<body>
+  <h1>My To-Do List</h1>
+
+  <form id="newTaskForm">
+    <input type="text" id="newTaskInput" placeholder="Add a new task…" required />
+    <button type="submit">Add</button>
+  </form>
+
+  <ul id="taskList"></ul>
+
+  <script>
+    const apiBase = '/api/tasks';
+    const taskListEl = document.getElementById('taskList');
+    const newTaskForm = document.getElementById('newTaskForm');
+    const newTaskInput = document.getElementById('newTaskInput');
+
+    // Fetch and render all tasks
+    async function loadTasks() {
+      const res = await fetch(apiBase);
+      const tasks = await res.json();
+      taskListEl.innerHTML = '';
+      tasks.forEach(renderTask);
+    }
+
+    // Render a single task <li>
+    function renderTask(task) {
+      const li = document.createElement('li');
+      li.dataset.id = task.id;
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = task.text;
+      input.disabled = true;
+
+      const editBtn = document.createElement('button');
+      editBtn.textContent = 'Edit';
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Delete';
+
+      li.append(input, editBtn, deleteBtn);
+      taskListEl.append(li);
+
+      // Delete
+      deleteBtn.addEventListener('click', async () => {
+        await fetch(`${apiBase}/${task.id}`, { method: 'DELETE' });
+        li.remove();
+      });
+
+      // Edit/Save
+      let editing = false;
+      editBtn.addEventListener('click', async () => {
+        if (!editing) {
+          editing = true;
+          input.disabled = false;
+          input.focus();
+          editBtn.textContent = 'Save';
+        } else {
+          editing = false;
+          input.disabled = true;
+          editBtn.textContent = 'Edit';
+          await fetch(`${apiBase}/${task.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: input.value })
+          });
+        }
+      });
+    }
+
+    // Handle new-task form submit
+    newTaskForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const text = newTaskInput.value.trim();
+      if (!text) return;
+      const res = await fetch(apiBase, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+      const newTask = await res.json();
+      renderTask(newTask);
+      newTaskInput.value = '';
+    });
+
+    // Initial load
+    loadTasks();
+  </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Portfolio</title>
+  <!-- jQuery and jQuery Mobile -->
+  <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+  <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<body>
+
+  <!-- Home / About Me Page -->
+  <div data-role="page" id="about">
+    <div data-role="header">
+      <h1>About Me</h1>
+      <a href="#nav-panel" class="ui-btn ui-btn-inline ui-corner-all ui-icon-bars ui-btn-icon-left">Menu</a>
+    </div>
+    <div data-role="content">
+      <h2>Your Name</h2>
+      <p>Brief bio: who you are, background, interests.</p>
+    </div>
+    <div data-role="footer">
+      <h4>&copy; 2025 Your Name</h4>
+    </div>
+  </div>
+
+  <!-- Projects Page -->
+  <div data-role="page" id="projects">
+    <div data-role="header">
+      <h1>Projects</h1>
+      <a href="#nav-panel" class="ui-btn ui-btn-inline ui-corner-all ui-icon-bars ui-btn-icon-left">Menu</a>
+    </div>
+    <div data-role="content">
+      <ul data-role="listview" data-inset="true">
+        <li><a href="#">Project One</a></li>
+        <li><a href="#">Project Two</a></li>
+        <li><a href="#">Project Three</a></li>
+      </ul>
+    </div>
+    <div data-role="footer">
+      <h4>&copy; 2025 Your Name</h4>
+    </div>
+  </div>
+
+  <!-- Skills Page -->
+  <div data-role="page" id="skills">
+    <div data-role="header">
+      <h1>Skills</h1>
+      <a href="#nav-panel" class="ui-btn ui-btn-inline ui-corner-all ui-icon-bars ui-btn-icon-left">Menu</a>
+    </div>
+    <div data-role="content">
+      <ul data-role="listview" data-inset="true">
+        <li>HTML &amp; CSS</li>
+        <li>JavaScript / jQuery</li>
+        <li>React / Angular</li>
+        <li>Python / Django</li>
+      </ul>
+    </div>
+    <div data-role="footer">
+      <h4>&copy; 2025 Your Name</h4>
+    </div>
+  </div>
+
+  <!-- Contact Info Page -->
+  <div data-role="page" id="contact">
+    <div data-role="header">
+      <h1>Contact Info</h1>
+      <a href="#nav-panel" class="ui-btn ui-btn-inline ui-corner-all ui-icon-bars ui-btn-icon-left">Menu</a>
+    </div>
+    <div data-role="content">
+      <p>Email: <a href="mailto:you@example.com">you@example.com</a></p>
+      <p>Phone: (123) 456-7890</p>
+      <p>LinkedIn: <a href="https://linkedin.com/in/yourprofile">yourprofile</a></p>
+    </div>
+    <div data-role="footer">
+      <h4>&copy; 2025 Your Name</h4>
+    </div>
+  </div>
+
+  <!-- Navigation Panel -->
+  <div data-role="panel" id="nav-panel" data-display="overlay">
+    <h2>Navigation</h2>
+    <ul data-role="listview">
+      <li><a href="#about">About Me</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact Info</a></li>
+    </ul>
+  </div>
+
+</body>
+</html>

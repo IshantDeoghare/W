@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PICT - Event Registration</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+  <!-- Top Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="#">Pune Institute of Computer Technology</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#welcome">Welcome to PICT</a></li>
+          <li class="nav-item"><a class="nav-link" href="#achievements">Our Achievements</a></li>
+          <li class="nav-item"><a class="nav-link" href="#toppers">Year-Wise Toppers</a></li>
+          <li class="nav-item"><a class="nav-link active" href="#registration">Register</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-grow-1 bg-light py-5">
+    <div class="container">
+      <!-- Header -->
+      <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold text-primary">Event Registration</h2>
+        <p class="lead">Join us for the Annual Technical Symposium 2025</p>
+      </div>
+
+      <!-- Registration Form -->
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <!-- Form Card -->
+          <div class="card shadow border-0 mb-5">
+            <div class="card-body p-5">
+              <form id="registrationForm" class="needs-validation" novalidate>
+                
+                <!-- Personal Details -->
+                <div class="card-header bg-white border-0 ps-0">
+                  <h4 class="mb-0">Personal Details</h4>
+                </div>
+                <div class="row mb-4 mt-3">
+                  <div class="col-md-6 mb-3">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="firstName" required>
+                    <div class="invalid-feedback">Please enter your first name</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" required>
+                    <div class="invalid-feedback">Please enter your last name</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" required>
+                    <div class="invalid-feedback">Please enter a valid email</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input type="tel" class="form-control" id="phone" required>
+                    <div class="form-text">10-digit number without spaces</div>
+                  </div>
+                </div>
+
+                <!-- Academic Details -->
+                <div class="card-header bg-white border-0 ps-0">
+                  <h4 class="mb-0">Academic Details</h4>
+                </div>
+                <div class="row mb-4 mt-3">
+                  <div class="col-md-6 mb-3">
+                    <label for="department" class="form-label">Department</label>
+                    <select class="form-select" id="department" required>
+                      <option value="" selected disabled>Choose...</option>
+                      <option>Computer Science</option>
+                      <option>Information Technology</option>
+                      <option>Electronics</option>
+                      <option>Mechanical</option>
+                      <option>Civil</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="year" class="form-label">Year of Study</label>
+                    <select class="form-select" id="year" required>
+                      <option value="" selected disabled>Choose...</option>
+                      <option>First Year</option>
+                      <option>Second Year</option>
+                      <option>Third Year</option>
+                      <option>Fourth Year</option>
+                    </select>
+                  </div>
+                  <div class="col-12 mb-3">
+                    <label for="rollNumber" class="form-label">Roll Number</label>
+                    <input type="text" class="form-control" id="rollNumber" required>
+                  </div>
+                </div>
+
+                <!-- Event Details -->
+                <div class="card-header bg-white border-0 ps-0">
+                  <h4 class="mb-0">Event Selection</h4>
+                </div>
+                <div class="row mb-4 mt-3">
+                  <div class="col-12 mb-3">
+                    <label for="event" class="form-label">Select Main Event</label>
+                    <select class="form-select" id="event" required>
+                      <option value="" selected disabled>Choose...</option>
+                      <option>Technical Workshop</option>
+                      <option>Hackathon</option>
+                      <option>Paper Presentation</option>
+                      <option>Project Exhibition</option>
+                      <option>Coding Competition</option>
+                    </select>
+                  </div>
+                  
+                </div>
+
+                
+                <!-- Agreement -->
+                <div class="mb-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="terms" required>
+                    <label class="form-check-label" for="terms">
+                      I agree to the terms and conditions
+                    </label>
+                    <div class="invalid-feedback">
+                      You must agree before submitting.
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid">
+                  <button class="btn btn-primary btn-lg" type="submit">Register Now</button>
+                </div>
+                
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-primary text-white text-center py-4 mt-auto">
+    <div class="container">
+      <p class="mb-1">Pune Institute of Computer Technology, Bavdhan, Pune - 411021</p>
+      <p class="mb-1">Contact: +91 20 1234 5678 | Email: info@pict.edu</p>
+      <div>
+        <a href="#" class="text-white me-3">Facebook</a>
+        <a href="#" class="text-white me-3">Twitter</a>
+        <a href="#" class="text-white">Instagram</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Simple Form Validation -->
+  <script>
+    // Form validation
+    document.addEventListener('DOMContentLoaded', function() {
+      var form = document.getElementById('registrationForm');
+      
+      form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        } else {
+          event.preventDefault();
+          alert('Registration successful!');
+        }
+        
+        form.classList.add('was-validated');
+      });
+    });
+  </script>
+</body>
+</html>

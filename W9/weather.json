@@ -1,0 +1,6 @@
+{
+    "mumbai": { "city": "Mumbai", "temperature": 30, "humidity": 70, "condition": "Sunny" },
+    "pune":   { "city": "Pune",   "temperature": 28, "humidity": 65, "condition": "Partly Cloudy" },
+    "delhi":  { "city": "Delhi",  "temperature": 35, "humidity": 40, "condition": "Hot" },
+    "kolkata":{ "city": "Kolkata","temperature": 32, "humidity": 80, "condition": "Humid" }
+   }

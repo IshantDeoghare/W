@@ -1,0 +1,65 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <title>Student Marks</title>
+  <style>
+    table { border-collapse: collapse; width: 100% }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: center }
+  </style>
+</head><body>
+  <h1>Student Marks</h1>
+  <p>Total: <span id="count">…</span></p>
+
+  <!-- Filters examples -->
+  <button onclick="load('?dsbda_gt=20')">DSBDA > 20</button>
+  <button onclick="load('?inc_gt=25')">All > 25</button>
+  <button onclick="load('?low_wad_cns=true')">WAD < 40 &amp; CNS < 40</button>
+  <button onclick="load()">Show All</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th><th>Roll</th><th>WAD</th><th>CC</th>
+        <th>DSBDA</th><th>CNS</th><th>AI</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <script>
+    async function load(q='') {
+      const res = await fetch('/api/students' + q);
+      const { count, students } = await res.json();
+      document.getElementById('count').textContent = count;
+      const tb = document.getElementById('tbody');
+      tb.innerHTML = '';
+      students.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>\${s.Name}</td>
+          <td>\${s.Roll_No}</td>
+          <td>\${s.WAD_Marks}</td>
+          <td>\${s.CC_Marks}</td>
+          <td>\${s.DSBDA_Marks}</td>
+          <td>\${s.CNS_Marks}</td>
+          <td>\${s.AI_Marks}</td>
+          <td>
+            <button onclick="inc('\${s._id}')">+10</button>
+            <button onclick="del('\${s._id}')">🗑️</button>
+          </td>
+        `;
+        tb.appendChild(tr);
+      });
+    }
+    async function inc(id) {
+      await fetch('/api/students/'+id+'/increment', { method:'PATCH' });
+      load();
+    }
+    async function del(id) {
+      await fetch('/api/students/'+id, { method:'DELETE' });
+      load();
+    }
+    load();
+  </script>
+</body></html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registered Users</title>
+  <style>
+    body { max-width: 600px; margin: auto; font-family: Arial; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Registered Users</h1>
+  <table>
+    <thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>DOB</th><th>City</th></tr></thead>
+    <tbody id="tb"></tbody>
+  </table>
+  <script>
+    async function load() {
+      const res = await fetch('/api/users');
+      const users = await res.json();
+      const tb = document.getElementById('tb');
+      tb.innerHTML = '';
+      users.forEach(u => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${u.name}</td>
+          <td>${u.email}</td>
+          <td>${u.mobile}</td>
+          <td>${u.dob}</td>
+          <td>${u.city}</td>
+        `;
+        tb.appendChild(tr);
+      });
+    }
+    load();
+  </script>
+</body>
+</html>
