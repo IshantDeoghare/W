@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Local Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f0f0f0;
+    }
+
+    .weather-box {
+      background: #fff;
+      padding: 2rem;
+      max-width: 400px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    input[type="text"] {
+      padding: 0.5rem;
+      width: 80%;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      margin-left: 5px;
+    }
+
+    .result {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="weather-box">
+    <h2>Weather Checker 🌦</h2>
+    <input type="text" id="cityInput" placeholder="Enter city name">
+    <button onclick="getWeather()">Check</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    // Simulated local weather data repository
+    const weatherData = {
+      "mumbai": {
+        temperature: "32°C",
+        humidity: "70%",
+        condition: "Sunny"
+      },
+      "delhi": {
+        temperature: "28°C",
+        humidity: "60%",
+        condition: "Cloudy"
+      },
+      "pune": {
+        temperature: "30°C",
+        humidity: "65%",
+        condition: "Partly Cloudy"
+      },
+      "bangalore": {
+        temperature: "25°C",
+        humidity: "75%",
+        condition: "Rainy"
+      }
+    };
+
+    function getWeather() {
+      const city = document.getElementById("cityInput").value.toLowerCase();
+      const resultDiv = document.getElementById("result");
+
+      // Simulating AJAX call using setTimeout
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          const data = JSON.parse(xhr.responseText);
+          if (data[city]) {
+            const weather = data[city];
+            resultDiv.innerHTML = `
+              <h3>Weather in ${city.charAt(0).toUpperCase() + city.slice(1)}</h3>
+              <p>Temperature: ${weather.temperature}</p>
+              <p>Humidity: ${weather.humidity}</p>
+              <p>Condition: ${weather.condition}</p>
+            `;
+          } else {
+            resultDiv.innerHTML = `<p style="color: red;">City not found in local repository.</p>`;
+          }
+        }
+      };
+
+      // Simulate fetching data from "local repository"
+      xhr.open("GET", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(weatherData)), true);
+      xhr.send();
+    }
+  </script>
+
+</body>
+</html>

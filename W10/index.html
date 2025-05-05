@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJAX To-Do List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .add-task {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .add-task input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            font-size: 16px;
+        }
+        
+        .add-task button {
+            padding: 12px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .add-task button:hover {
+            background-color: #3e9142;
+        }
+        
+        .task-list {
+            list-style-type: none;
+        }
+        
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+        
+        .task-item:last-child {
+            border-bottom: none;
+        }
+        
+        .task-checkbox {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .task-text {
+            flex: 1;
+            font-size: 16px;
+        }
+        
+        .task-text.completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+        
+        .task-actions {
+            display: flex;
+        }
+        
+        .edit-btn, .delete-btn {
+            padding: 6px 12px;
+            margin-left: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .edit-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        .edit-btn:hover {
+            background-color: #0b7dda;
+        }
+        
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 10px;
+            font-style: italic;
+            color: #666;
+            display: none;
+        }
+
+        .save-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #333;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .save-indicator.show {
+            opacity: 1;
+        }
+
+        .error-message {
+            background-color: #ffe6e6;
+            color: #d32f2f;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AJAX To-Do List</h1>
+        
+        <!-- <div class="error-message" id="error-message">
+            There was an error connecting to the server. Your changes may not be saved.
+        </div> -->
+        
+        <div class="add-task">
+            <input type="text" id="new-task" placeholder="Add a new task...">
+            <button id="add-btn">Add Task</button>
+        </div>
+        
+        <div class="loading" id="loading">Loading tasks...</div>
+        
+        <ul class="task-list" id="task-list">
+            <!-- Tasks will be loaded here -->
+        </ul>
+    </div>
+    
+    <div class="save-indicator" id="save-indicator">Saving...</div>
+    
+    <script>
+    const newTaskInput = document.getElementById('new-task');
+    const addBtn = document.getElementById('add-btn');
+    const taskList = document.getElementById('task-list');
+    const loadingIndicator = document.getElementById('loading');
+    const saveIndicator = document.getElementById('save-indicator');
+    const errorMessage = document.getElementById('error-message');
+
+    addBtn.addEventListener('click', addTask);
+    newTaskInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            addTask();
+        }
+    });
+
+    function addTask() {
+        const tasktext = newTaskInput.value.trim();
+        if (tasktext === '') return;
+
+        const task = { text: tasktext, completed: false };
+        newTaskInput.value = '';
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://localhost:5000/api/addtask', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                loadTasks();
+            } else {
+                showError('Failed to add task.');
+            }
+        };
+
+        xhr.onerror = function () {
+            showError('Server error while adding task.');
+        };
+
+        xhr.send(JSON.stringify({ task }));
+    }
+
+    function loadTasks() {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:5000/api/getdata', true);
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                const tasks = JSON.parse(xhr.responseText);
+                renderTasks(tasks);
+            } else {
+                showError('Failed to load tasks.');
+            }
+        };
+
+        xhr.onerror = function () {
+            showError('Server error while loading tasks.');
+        };
+
+        xhr.send();
+    }
+
+    function renderTasks(tasks) {
+        taskList.innerHTML = '';
+        tasks.forEach((task, index) => {
+            const li = document.createElement('li');
+            li.className = 'task-item';
+            li.innerHTML = `
+                <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onclick="toggleCompletion(${index})">
+                <span class="task-text ${task.completed ? 'completed' : ''}">${task.text}</span>
+                <div class="task-actions">
+                    <button onclick="editTask(${index})">Edit</button>
+                    <button onclick="deleteTask(${index})">Delete</button>
+                </div>
+            `;
+            taskList.appendChild(li);
+        });
+        loadingIndicator.style.display = 'none';
+    }
+
+    function editTask(index) {
+        const newText = prompt('Edit your task:');
+        if (newText === null || newText.trim() === '') return;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:5000/api/getdata', true);
+        xhr.onload = function () {
+            const tasks = JSON.parse(xhr.responseText);
+            tasks[index].text = newText;
+
+            const updateXhr = new XMLHttpRequest();
+            updateXhr.open('POST', 'http://localhost:5000/api/edittask', true);
+            updateXhr.setRequestHeader('Content-Type', 'application/json');
+            updateXhr.onload = function () {
+                loadTasks();
+            };
+            updateXhr.send(JSON.stringify({ index, task: tasks[index] }));
+        };
+        xhr.send();
+    }
+
+    function deleteTask(index) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://localhost:5000/api/deletetask', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onload = function () {
+            loadTasks();
+        };
+
+        xhr.onerror = function () {
+            showError('Failed to delete task.');
+        };
+
+        xhr.send(JSON.stringify({ index }));
+    }
+
+    function toggleCompletion(index) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:5000/api/getdata', true);
+        xhr.onload = function () {
+            const tasks = JSON.parse(xhr.responseText);
+            tasks[index].completed = !tasks[index].completed;
+
+            const updateXhr = new XMLHttpRequest();
+            updateXhr.open('POST', 'http://localhost:5000/api/edittask', true);
+            updateXhr.setRequestHeader('Content-Type', 'application/json');
+            updateXhr.onload = function () {
+                loadTasks();
+            };
+            updateXhr.send(JSON.stringify({ index, task: tasks[index] }));
+        };
+        xhr.send();
+    }
+
+    function showError(msg) {
+        errorMessage.textContent = msg;
+        errorMessage.style.color = 'red';
+        setTimeout(() => {
+            errorMessage.textContent = '';
+        }, 3000);
+    }
+
+    window.onload = function () {
+        loadTasks();
+    };
+</script>
+
+</body>
+</html>

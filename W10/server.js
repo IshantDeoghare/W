@@ -2,53 +2,45 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const app = express();
-const PORT = process.env.PORT || 3000;
-const DATA_FILE = path.join(__dirname, 'data', 'todos.json');
-
+const cors = require('cors');
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors());
 
-// Helper to read/write JSON file
- function readTodos() {
-  const json = fs.readFileSync(DATA_FILE, 'utf-8');
-  return JSON.parse(json);
+app.get('/api/getdata',(req,res)=>{
+    const response = fs.readFileSync(path.join(__dirname,'tasks.json'));
+    const data = JSON.parse(response);
+    res.json(data);
+})
+
+app.post('/api/addtask',(req,res)=>{
+    const {task} = req.body;
+    const response = fs.readFileSync(path.join(__dirname,'tasks.json'));
+    const data = JSON.parse(response);
+    data.push(task);
+    fs.writeFileSync(path.join(__dirname,'tasks.json'),JSON.stringify(data));
+    res.json(data);
+})
+
+app.post('/api/deletetask',(req,res)=>{
+    const {index} = req.body;
+    const response = fs.readFileSync(path.join(__dirname,'tasks.json'));
+    const data = JSON.parse(response);
+    data.splice(index,1);
+    fs.writeFileSync(path.join(__dirname,'tasks.json'),JSON.stringify(data));
+    res.json(data);
 }
+);
 
-function writeTodos(todos) {
-  fs.writeFileSync(DATA_FILE,
-    JSON.stringify(todos, null, 2), 'utf-8');
+app.post('/api/edittask',(req,res)=>{
+    const {index,task} = req.body;
+    const response = fs.readFileSync(path.join(__dirname,'tasks.json'));
+    const data = JSON.parse(response);
+    data[index] = task;
+    fs.writeFileSync(path.join(__dirname,'tasks.json'),JSON.stringify(data));
+    res.json(data);
 }
+);
 
-app.get('/api/todos', (req, res) => {
-  const todos = readTodos();
-  res.json(todos);
-});
-
-app.post('/api/todos', (req, res) => {
-  const todos = readTodos();
-  const { text } = req.body;
-  const newTodo = { id: Date.now().toString(), text, completed: false };
-  todos.push(newTodo);
-  writeTodos(todos);
-  res.status(201).json(newTodo);
-});
-
-// PUT update todo (text or completed)
-app.put('/api/todos/:id', (req, res) => {
-  const todos = readTodos();
-  const todo = todos.find(t => t.id === req.params.id);
-  if (!todo) return res.sendStatus(404);
-  Object.assign(todo, req.body);
-  writeTodos(todos);
-  res.json(todo);
-});
-
-// DELETE todo
-app.delete('/api/todos/:id', (req, res) => {
-  let todos = readTodos();
-  todos = todos.filter(t => t.id !== req.params.id);
-  writeTodos(todos);
-  res.sendStatus(204);
-});
-
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+app.listen(5000,()=>{
+    console.log("Server is running on port 5000")
+})

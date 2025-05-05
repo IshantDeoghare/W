@@ -1,36 +1,35 @@
 const express = require('express');
+const cors = require('cors');
+const fs = require('fs');
 const path = require('path');
+
 const app = express();
-const PORT = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// In-memory store
-const users = [];
+app.post('/register', (req, res) => {
+    const user = req.body;
+    const data = fs.readFileSync(path.join(__dirname,'data.json'), 'utf8');
+    const users = JSON.parse(data || '[]');
+    users.push(user);
+    fs.writeFileSync(path.join(__dirname,'data.json'), JSON.stringify(users), 'utf8');
+    res.status(200).json({ message: 'User registered successfully' });
+})
 
-// Registration endpoint
-app.post('/api/register', (req, res) => {
-  const { name, email, mobile, dob, city, address, username, password } = req.body;
-  // basic duplicate check
-  if (users.find(u => u.username === username)) {
-    return res.status(400).json({ error: 'Username already exists' });
-  }
-  users.push({ name, email, mobile, dob, city, address, username, password });
-  res.status(201).json({ message: 'Registered successfully' });
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+    const data = fs.readFileSync(path.join(__dirname,'data.json'), 'utf8');
+    const users = JSON.parse(data || '[]');
+
+    const user = users.find(u => u.username === username && u.password === password);
+    if (user) {
+        res.status(200).json({ message: 'Login successful', user });
+    } else {
+        res.status(401).json({ message: 'Invalid username or password' });
+    }
 });
 
-// Login endpoint
-app.post('/api/login', (req, res) => {
-  const { username, password } = req.body;
-  const user = users.find(u => u.username === username && u.password === password);
-  if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-  res.json({ message: 'Login successful' });
-});
-
-// Get all users
-app.get('/api/users', (req, res) => {
-  res.json(users);
-});
-
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(3000, () => {
+    console.log('Server is running on http://localhost:3000');
+})

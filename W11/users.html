@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .container { max-width: 500px; margin: auto; }
+    h2 { color: #333; }
+    .info { margin-bottom: 10px; }
+    .label { font-weight: bold; }
+    button { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome, <span id="displayName"></span>!</h2>
+
+    <div class="info"><span class="label">Email:</span> <span id="email"></span></div>
+    <div class="info"><span class="label">Mobile:</span> <span id="mobile"></span></div>
+    <div class="info"><span class="label">DOB:</span> <span id="dob"></span></div>
+    <div class="info"><span class="label">City:</span> <span id="city"></span></div>
+    <div class="info"><span class="label">Address:</span> <span id="address"></span></div>
+
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (!user) {
+      alert("Please login first");
+      window.location.href = "index.html";
+    } else {
+      document.getElementById("displayName").textContent = user.name;
+      document.getElementById("email").textContent = user.email;
+      document.getElementById("mobile").textContent = user.mobile;
+      document.getElementById("dob").textContent = user.dob;
+      document.getElementById("city").textContent = user.city;
+      document.getElementById("address").textContent = user.address;
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
